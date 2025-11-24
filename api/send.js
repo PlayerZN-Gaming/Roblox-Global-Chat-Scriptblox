@@ -4,27 +4,40 @@ export default async function handler(req, res) {
   const { localplayername, message } = req.body || {};
   if (!localplayername || !message) return res.status(400).end();
 
-  const BIN_ID = "67b3f15bad19ca34f815d35f";
-  const KEY = "$2b$10$8z8K9k9Xj5vL7pQz3mN2/.exampleKeyDoNotSteal";
+  const BIN_ID = "6923e199ae596e708f6ceed2";        // ← PUT YOUR BIN ID
+  const MASTER_KEY = "$2a$10$gsW4zzNGmXVvFclb.hFPheWIZhmqIWRobGSMh55RJaN3JI6.o60rK"; // ← PUT YOUR MASTER KEY
 
   try {
+    // Get current messages
     const get = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-      headers: { "X-Master-Key": KEY }
+      headers: { "X-Master-Key": MASTER_KEY }
     });
     const data = await get.json();
     let messages = data.record || [];
 
-    messages.push({ localplayername, message, time: Date.now() });
-    if (messages.length > 300) messages.shift();
+    // Add new message
+    messages.push({
+      localplayername: localplayername.trim(),
+      message: message.trim(),
+      time: Date.now()
+    });
 
+    // Keep only last 500 messages
+    if (messages.length > 500) messages.shift();
+
+    // Save back
     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Master-Key": KEY },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": MASTER_KEY
+      },
       body: JSON.stringify(messages)
     });
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 }
