@@ -1,33 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Roblox Global Chat</title>
+  <meta charset="UTF-8">
+  <title>Roblox Global Chat API</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; margin: 20px; }
-    h1 { color: #00ff00; text-align: center; }
-    #chat { background: #111; border: 2px solid #00ff00; padding: 15px; height: 500px; overflow-y: auto; margin: 20px 0; border-radius: 10px; }
-    .msg { margin: 8px 0; }
-    .name { color: #00ff00; font-weight: bold; }
-    input { padding: 12px; width: 200px; margin-right: 10px; border: none; border-radius: 5px; }
-    button { padding: 12px 20px; background: #00ff00; color: black; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; }
+    body { background:#000; color:#0f0; font-family:Arial; text-align:center; padding:50px; }
+    h1 { font-size:3em; }
+    code { background:#111; padding:10px; border-radius:8px; }
   </style>
 </head>
 <body>
   <h1>Roblox Global Chat</h1>
-  <div id="chat">Loading messages...</div>
-  <div>
-    <input type="text" id="name" placeholder="Your Roblox Name" />
-    <input type="text" id="msg" placeholder="Type message..." onkeypress="if(event.key==='Enter') send()" />
-    <button onclick="send()">Send</button>
-  </div>
-
-  <script src="/send.js"></script>
-  <script src="/messages.js"></script>
-  <script>
-    fetchMessages();
-    setInterval(fetchMessages, 3000); // Auto refresh every 3 sec
-  </script>
+  <p>Live global chat for Roblox players</p>
+  <br>
+  <p>POST → <code>/api/send</code></p>
+  <p>GET → <code>/api/messages</code></p>
+  <br>
+  <small>Works worldwide • Free • Powered by Vercel</small>
 </body>
 </html>
