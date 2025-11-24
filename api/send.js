@@ -1,32 +1,42 @@
-const BIN_ID = "6923e199ae596e708f6ceed2";
-const API_KEY = "$2a$10$gsW4zzNGmXVvFclb.hFPheWIZhmqIWRobGSMh55RJaN3JI6.o60rK";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "POST only" });
+    return res.status(400).json({ success: false, error: "POST only" });
   }
+
+  // 🔥 Insert your keys here
+  const BIN_ID = "6923e199ae596e708f6ceed2";
+  const MASTER_KEY = "$2a$10$gsW4zzNGmXVvFclb.hFPheWIZhmqIWRobGSMh55RJaN3JI6.o60rK";
 
   const { user, message } = req.body;
+
   if (!user || !message) {
-    return res.json({ success: false, error: "Missing fields" });
+    return res.status(400).json({ success: false, error: "Missing user or message" });
   }
 
-  const current = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-    headers: { "X-Master-Key": API_KEY }
+  // Get existing messages
+  const getReq = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+    headers: { "X-Master-Key": MASTER_KEY }
+  });
+  const getData = await getReq.json();
+  const messages = getData.record.messages || [];
+
+  // Add the new message
+  messages.push({
+    user,
+    message,
+    time: Date.now()
   });
 
-  const data = await current.json();
-  const messages = data.record.messages || [];
-
-  messages.push({ user, message, timestamp: Date.now() });
-
-  if (messages.length > 200) messages.shift();
-
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+  // Update JSONBin
+  const updateReq = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Master-Key": MASTER_KEY
+    },
     body: JSON.stringify({ messages })
   });
 
-  res.json({ success: true });
+  const updateData = await updateReq.json();
+  res.status(200).json({ success: true, messages });
 }
