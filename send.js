@@ -1,32 +1,26 @@
-const BIN_ID = "6923e199ae596e708f6ceed2";
-const API_KEY = "PASTE-YOUR-JSONBIN-KEY-HERE";
+import fs from "fs";
+import path from "path";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "POST only" });
-  }
+export default function handler(req, res) {
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "POST only" });
+    }
 
-  const { user, message } = req.body;
-  if (!user || !message) {
-    return res.json({ success: false, error: "Missing fields" });
-  }
+    const { user, message } = req.body;
 
-  const current = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-    headers: { "X-Master-Key": API_KEY }
-  });
+    if (!user || !message)
+        return res.status(400).json({ error: "Missing fields" });
 
-  const data = await current.json();
-  const messages = data.record.messages || [];
+    const filePath = path.join(process.cwd(), "data.json");
+    const file = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
-  messages.push({ user, message, timestamp: Date.now() });
+    file.messages.push({
+        user,
+        message,
+        time: "0 seconds ago"
+    });
 
-  if (messages.length > 200) messages.shift();
+    fs.writeFileSync(filePath, JSON.stringify(file, null, 2));
 
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-    body: JSON.stringify({ messages })
-  });
-
-  res.json({ success: true });
+    res.json({ success: true });
 }
