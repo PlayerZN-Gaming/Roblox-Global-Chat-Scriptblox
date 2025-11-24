@@ -3,8 +3,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "POST only" });
 
   // 🔧 Put your JSONBin info here:
-  const BIN_ID = "YOUR_BIN_ID_HERE";
-  const MASTER_KEY = "YOUR_MASTER_KEY_HERE";
+  const BIN_ID = "6923e199ae596e708f6ceed2";
+  const MASTER_KEY = "$2a$10$gsW4zzNGmXVvFclb.hFPheWIZhmqIWRobGSMh55RJaN3JI6.o60rK";
 
   const { user, message } = req.body;
 
